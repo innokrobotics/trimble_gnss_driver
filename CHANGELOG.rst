@@ -2,8 +2,8 @@
 Changelog for package trimble_gnss_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.4 (2023-05-19)
+------------------
 * Merge pull request `#4 <https://github.com/SAGARobotics/trimble_gnss_driver/issues/4>`_ from polymathrobotics/master
   Improve read reliability over poor network connectivity
 * Merge branch 'devel' into 'master'
