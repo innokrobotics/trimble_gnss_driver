@@ -29,7 +29,7 @@ include_directories(
 )
 
 
-install(PROGRAMS
+catkin_install_python(PROGRAMS
   scripts/gsof_driver.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
