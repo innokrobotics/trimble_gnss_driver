@@ -250,9 +250,9 @@ class GSOFDriver(object):
 
         yaw.orientation = Quaternion(*orientation_quat)
 
-        yaw.orientation_covariance[0] = self.rec_dict['ROLL_VAR'] ** 2  # [36] size array
-        yaw.orientation_covariance[4] = self.rec_dict['PITCH_VAR'] ** 2  # [36] size array
-        yaw.orientation_covariance[8] = self.rec_dict['YAW_VAR'] ** 2 # [36] size array
+        yaw.orientation_covariance[0] = self.rec_dict['ROLL_VAR']  # [9]
+        yaw.orientation_covariance[4] = self.rec_dict['PITCH_VAR']  # [9]
+        yaw.orientation_covariance[8] = self.rec_dict['YAW_VAR'] # [9]
 
         self.yaw_pub.publish(yaw)
 
