@@ -65,6 +65,8 @@ class GSOFDriver(object):
         rospy.loginfo("Heading offset is %f", self.heading_offset)
 
         self.fix_pub = rospy.Publisher('fix', NavSatFix, queue_size=1)
+
+        self.status_pub = rospy.Publisher('gps/status', NavSatStatus, queue_size=1)
         # For attitude, use IMU msg to keep compatible with robot_localization
         # But note that this is not only from an IMU
         self.attitude_pub = rospy.Publisher('attitude', Imu, queue_size=1)
@@ -106,6 +108,7 @@ class GSOFDriver(object):
                 if INS_RMS in self.records or self.current_time - self.ins_rms_ts < self.error_info_timeout:
                     # print "Full INS info, filling ROS messages"
                     self.send_ins_fix()
+                    self.send_gps_status()
                     self.send_ins_attitude()
                 else:
                     rospy.logwarn("Skipping INS output as no matching errors within the timeout. Current time: %f, last error msg %f", self.current_time, self.ins_rms_ts)
@@ -113,6 +116,7 @@ class GSOFDriver(object):
                 if LAT_LON_H in self.records:
                     if (POSITION_SIGMA in self.records or self.current_time - self.pos_sigma_ts < self.error_info_timeout) and (POSITION_TYPE in self.records or self.current_time - self.quality_ts < self.base_info_timeout):
                         self.send_fix()
+                        self.send_gps_status()
                     else:
                         rospy.logwarn("Skipping fix output as no corresponding sigma errors or gps quality within the timeout. Current time: %f, last sigma msg %f, last gps quality msg %f", self.current_time, self.pos_sigma_ts, self.quality_ts)
                 if ATTITUDE in self.records:
@@ -125,6 +129,14 @@ class GSOFDriver(object):
             # if INS_FULL_NAV in self.records and LAT_LON_H in self.records:
             #     print("Altitude INS: ", self.rec_dict['FUSED_ALTITUDE'], "Height LLH (WGS84): ", self.rec_dict['HEIGHT_WGS84'])
 
+    def send_gps_status(self):
+        gps_qual = gps_qualities[self.rec_dict['GPS_QUALITY']]
+
+        status = NavSatStatus()
+        status.service = NavSatStatus.SERVICE_GPS # TODO: Fill correctly
+        status.status = gps_qual[0]
+
+        self.status_pub.publish(status)
 
     def send_ins_fix(self):
         if self.rec_dict['FUSED_LATITUDE'] == 0 and self.rec_dict['FUSED_LONGITUDE']  == 0 and self.rec_dict['FUSED_ALTITUDE'] == 0:
@@ -250,9 +262,9 @@ class GSOFDriver(object):
 
         yaw.orientation = Quaternion(*orientation_quat)
 
-        yaw.orientation_covariance[0] = self.rec_dict['ROLL_VAR']  # [9]
-        yaw.orientation_covariance[4] = self.rec_dict['PITCH_VAR']  # [9]
-        yaw.orientation_covariance[8] = self.rec_dict['YAW_VAR'] # [9]
+        yaw.orientation_covariance[0] = self.rec_dict['ROLL_VAR'] ** 2  # [9]
+        yaw.orientation_covariance[4] = self.rec_dict['PITCH_VAR'] ** 2  # [9]
+        yaw.orientation_covariance[8] = self.rec_dict['YAW_VAR'] ** 2 # [9]
 
         self.yaw_pub.publish(yaw)
 
