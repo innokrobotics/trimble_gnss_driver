@@ -140,7 +140,7 @@ class GSOFDriver(object):
 
     def send_ins_fix(self):
         if self.rec_dict['FUSED_LATITUDE'] == 0 and self.rec_dict['FUSED_LONGITUDE']  == 0 and self.rec_dict['FUSED_ALTITUDE'] == 0:
-            rospy.logwarn("Invalid fix, skipping")
+            rospy.logwarn_throttle("Invalid fix, skipping")
             return
         current_time = rospy.get_rostime() # Replace with GPS time?
         fix = NavSatFix()
@@ -178,7 +178,7 @@ class GSOFDriver(object):
         """
 
         if self.rec_dict['FUSED_ROLL'] == 0 and self.rec_dict['FUSED_PITCH']  == 0 and self.rec_dict['FUSED_YAW'] == 0:
-            rospy.logwarn("Invalid yaw, skipping")
+            rospy.logwarn_throttle("Invalid yaw, skipping")
             return
 
         current_time = rospy.get_rostime() # Replace with GPS time?
@@ -206,7 +206,7 @@ class GSOFDriver(object):
 
     def send_fix(self):
         if self.rec_dict['LATITUDE'] == 0 and self.rec_dict['LONGITUDE']  == 0 and self.rec_dict['HEIGHT_WGS84'] == 0:
-            rospy.logwarn("Invalid fix, skipping")
+            rospy.logwarn_throttle("Invalid fix, skipping")
             return
 
         current_time = rospy.get_rostime() # Replace with GPS time?
@@ -241,7 +241,7 @@ class GSOFDriver(object):
         other software
         """
         if self.rec_dict['ROLL'] == 0 and self.rec_dict['PITCH']  == 0 and self.rec_dict['YAW'] == 0:
-            rospy.logwarn("Invalid yaw, skipping")
+            rospy.logwarn_throttle("Invalid yaw, skipping")
             return
 
         current_time = rospy.get_rostime() # Replace with GPS time?
